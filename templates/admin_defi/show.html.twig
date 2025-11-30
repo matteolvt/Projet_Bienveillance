@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Défi
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h1>
+				<i class="fa-solid fa-trophy"></i>
+				Défi #{{ defi.id }}</h1>
+			<a href="{{ path('app_admin_defi_index') }}" class="btn btn-outline-secondary">
+				<i class="fa-solid fa-arrow-left"></i>
+				Retour à la liste
+			</a>
+		</div>
+
+		<div class="card shadow-sm">
+			<div class="card-header bg-light d-flex justify-content-between align-items-center">
+				<strong>Contenu du défi</strong>
+
+				{% if defi.statut == 'realisable' %}
+					<span class="badge bg-success">Publié (Réalisable)</span>
+				{% elseif defi.statut == 'en_attente' %}
+					<span class="badge bg-warning text-dark">En attente de validation</span>
+				{% else %}
+					<span class="badge bg-secondary">{{ defi.statut }}</span>
+				{% endif %}
+			</div>
+
+			<div class="card-body">
+				<table class="table table-bordered">
+					<tbody>
+						<tr>
+							<th style="width: 200px;">ID</th>
+							<td>{{ defi.id }}</td>
+						</tr>
+						<tr>
+							<th>Titre</th>
+							<td class="fs-4 text-primary fw-bold">{{ defi.title }}</td>
+						</tr>
+						<tr>
+							<th>Description</th>
+							<td class="bg-light p-3">
+								{{ defi.description|nl2br }}
+							</td>
+						</tr>
+						<tr>
+							<th>Auteur</th>
+							<td>
+								{% if defi.author %}
+									<a href="{{ path('app_admin_user_show', {'id': defi.author.id}) }}" class="text-decoration-none fw-bold">
+										<i class="fa-solid fa-user"></i>
+										{{ defi.author.name }}
+										{{ defi.author.surname }}
+									</a>
+									<small class="text-muted ms-2">({{ defi.author.email }})</small>
+								{% else %}
+									<span class="badge bg-secondary">Auteur supprimé ou inconnu</span>
+								{% endif %}
+							</td>
+						</tr>
+						<tr>
+							<th>Date de validation</th>
+							<td>
+								{% if defi.dateModeration %}
+									{{ defi.dateModeration|date('d/m/Y à H:i') }}
+								{% else %}
+									<span class="text-muted fst-italic">Pas encore validé</span>
+								{% endif %}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="card-footer bg-white d-flex justify-content-end gap-2">
+				<a href="{{ path('app_admin_defi_edit', {'id': defi.id}) }}" class="btn btn-warning">
+					<i class="fa-solid fa-pen"></i>
+					Modifier
+				</a>
+
+				<form method="post" action="{{ path('app_admin_defi_delete', {'id': defi.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce défi définitivement ?');">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ defi.id) }}">
+					<button class="btn btn-danger">
+						<i class="fa-solid fa-trash"></i>
+						Supprimer
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<h1 class="mb-4 text-danger">
+			<i class="fa-solid fa-user-shield"></i>
+			Espace Administration
+		</h1>
+
+		<div class="row mb-5">
+			<div class="col-md-4">
+				<div class="card text-center h-100 border-primary shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title text-primary">
+							<i class="fa-solid fa-users"></i>
+							Utilisateurs</h5>
+						<p class="card-text small text-muted">Gérer les comptes, changer les rôles (Admin/User), supprimer un membre.</p>
+						<a href="{{ path('app_admin_user_index') }}" class="btn btn-outline-primary w-100 stretched-link">Gérer les Users</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card text-center h-100 border-success shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title text-success">
+							<i class="fa-solid fa-trophy"></i>
+							Tous les Défis</h5>
+						<p class="card-text small text-muted">Modifier les textes, voir la liste complète, supprimer les défis obsolètes.</p>
+						<a href="{{ path('app_admin_defi_index') }}" class="btn btn-outline-success w-100 stretched-link">Gérer les Défis</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card text-center h-100 border-warning shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title text-warning">
+							<i class="fa-solid fa-comments"></i>
+							Commentaires</h5>
+						<p class="card-text small text-muted">Modérer les avis, censurer les messages inappropriés.</p>
+						<a href="{{ path('app_admin_commentaire_index') }}" class="btn btn-outline-warning w-100 stretched-link">Gérer les Comms</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card shadow-sm border-danger">
+			<div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+				<h5 class="mb-0">
+					<i class="fa-solid fa-hourglass-half"></i>
+					Défis en attente de validation</h5>
+				<span class="badge bg-white text-danger fw-bold">{{ defis|length }}
+					en attente</span>
+			</div>
+
+			<div class="card-body p-0">
+				{% if defis is empty %}
+					<div class="p-5 text-center text-muted">
+						<i class="fa-solid fa-check-circle fa-4x mb-3 text-success"></i>
+						<h4>Tout est à jour !</h4>
+						<p>Aucun défi à modérer pour le moment.</p>
+					</div>
+				{% else %}
+					<div class="table-responsive">
+						<table class="table table-hover table-striped mb-0 align-middle">
+							<thead class="table-light">
+								<tr>
+									<th style="width: 25%;">Auteur</th>
+									<th style="width: 50%;">Proposition</th>
+									<th class="text-center" style="width: 25%;">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for defi in defis %}
+									<tr>
+										<td>
+											<div class="fw-bold">{{ defi.author.name ?? 'Anonyme' }}</div>
+											<div class="small text-muted">{{ defi.author.email }}</div>
+										</td>
+										<td>
+											<a href="{{ path('app_defi_show', {'id': defi.id}) }}" class="text-decoration-none fw-bold text-primary fs-5">
+												{{ defi.title }}
+												<i class="fa-solid fa-arrow-up-right-from-square small ms-1" style="font-size: 0.7em;"></i>
+											</a>
+											<div class="small text-muted mt-1">
+												{{ defi.description|length > 120 ? defi.description|slice(0, 120) ~ '...' : defi.description }}
+											</div>
+										</td>
+										<td class="text-center">
+											<div class="btn-group" role="group">
+												<a href="{{ path('app_admin_defi_validate', {'id': defi.id}) }}" class="btn btn-success" title="Valider et Publier">
+													<i class="fa-solid fa-check"></i>
+													Valider
+												</a>
+
+												<a href="{{ path('app_admin_defi_delete', {'id': defi.id}) }}" class="btn btn-danger" title="Refuser / Supprimer" onclick="return confirm('Attention : cette action est irréversible. Voulez-vous vraiment supprimer ce défi ?');">
+													<i class="fa-solid fa-trash"></i>
+												</a>
+											</div>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+
+		<div class="mt-4">
+			<a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
+				<i class="fa-solid fa-arrow-left"></i>
+				Retour au site
+			</a>
+		</div>
+	</div>
+{% endblock %}

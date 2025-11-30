@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Utilisateur
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h1>
+				<i class="fa-solid fa-user-circle"></i>
+				Utilisateur #{{ user.id }}</h1>
+			<a href="{{ path('app_admin_user_index') }}" class="btn btn-outline-secondary">
+				<i class="fa-solid fa-arrow-left"></i>
+				Retour à la liste
+			</a>
+		</div>
+
+		<div class="card shadow-sm mb-4">
+			<div class="card-header bg-light">
+				<strong>Informations personnelles</strong>
+			</div>
+			<div class="card-body">
+				<table class="table table-bordered mb-0">
+					<tbody>
+						<tr>
+							<th style="width: 200px;">ID</th>
+							<td>{{ user.id }}</td>
+						</tr>
+						<tr>
+							<th>Prénom & Nom</th>
+							<td class="fs-5">
+								<strong>{{ user.name }}
+									{{ user.surname }}</strong>
+							</td>
+						</tr>
+						<tr>
+							<th>Email</th>
+							<td>
+								<a href="mailto:{{ user.email }}" class="text-decoration-none">{{ user.email }}</a>
+							</td>
+						</tr>
+						<tr>
+							<th>Rôle</th>
+							<td>
+								{% if user.rawRole == 'admin' %}
+									<span class="badge bg-danger rounded-pill">Administrateur</span>
+								{% else %}
+									<span class="badge bg-primary rounded-pill">Membre (Client)</span>
+								{% endif %}
+							</td>
+						</tr>
+						<tr>
+							<th>Date d'inscription</th>
+							<td>
+								{{ user.createdAt ? user.createdAt|date('d/m/Y à H:i') : 'Date inconnue' }}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="card-footer bg-white d-flex justify-content-end gap-2">
+				<a href="{{ path('app_admin_user_edit', {'id': user.id}) }}" class="btn btn-warning">
+					<i class="fa-solid fa-pen"></i>
+					Modifier
+				</a>
+				<form method="post" action="{{ path('app_admin_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Attention : Supprimer cet utilisateur supprimera aussi tous ses défis et commentaires. Continuer ?');">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+					<button class="btn btn-danger">
+						<i class="fa-solid fa-trash"></i>
+						Supprimer le compte
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<div class="card shadow-sm border-warning">
+			<div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+				<span>
+					<i class="fa-regular fa-comments"></i>
+					<strong>Historique des contributions</strong>
+				</span>
+				<span class="badge bg-dark text-white">{{ commentaires|length }}
+					message(s)</span>
+			</div>
+			<div class="card-body p-0">
+				{% if commentaires is empty %}
+					<div class="p-4 text-center text-muted">
+						Cet utilisateur n'a pas encore posté de commentaire.
+					</div>
+				{% else %}
+					<div class="table-responsive">
+						<table class="table table-hover table-striped mb-0 align-middle">
+							<thead class="table-light">
+								<tr>
+									<th>Date</th>
+									<th>Défi concerné</th>
+									<th>Message</th>
+									<th class="text-end">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for comm in commentaires %}
+									<tr>
+										<td>{{ comm.date|date('d/m/Y') }}</td>
+										<td>
+											{% if comm.defi %}
+												<a href="{{ path('app_admin_defi_show', {'id': comm.defi.id}) }}" class="text-decoration-none fw-bold">
+													{{ comm.defi.title }}
+												</a>
+											{% else %}
+												<span class="badge bg-secondary">Défi supprimé</span>
+											{% endif %}
+										</td>
+										<td>
+											<small>{{ comm.text|length > 60 ? comm.text|slice(0, 60) ~ '...' : comm.text }}</small>
+										</td>
+										<td class="text-end">
+											<a href="{{ path('app_admin_commentaire_show', {'id': comm.id}) }}" class="btn btn-sm btn-info text-white">
+												<i class="fa-solid fa-eye"></i>
+											</a>
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

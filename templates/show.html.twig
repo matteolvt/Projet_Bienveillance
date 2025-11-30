@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	{{ defi.title }}
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-3">
+		{% for label, messages in app.flashes %}
+			{% for message in messages %}
+				<div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'warning' ? 'warning' : 'success') }} alert-dismissible fade show" role="alert">
+					{{ message }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>
+			{% endfor %}
+		{% endfor %}
+	</div>
+
+	<div class="container">
+		<a href="{{ path('app_home') }}" class="btn btn-outline-secondary mb-3">
+			<i class="fa-solid fa-arrow-left"></i>
+			Retour à l'accueil
+		</a>
+
+		<div class="row">
+			<div class="col-md-8">
+
+				<div class="card shadow-sm mb-4">
+					<div class="card-body p-5">
+						<span class="badge bg-primary mb-2">{{ defi.statut }}</span>
+						<h1 class="card-title mb-4">{{ defi.title }}</h1>
+						<p class="lead text-muted">{{ defi.description|nl2br }}</p>
+						<hr>
+						<div class="d-flex justify-content-between align-items-center">
+							<small class="text-muted">Proposé par
+								<strong>{{ defi.author.name ?? 'Anonyme' }}</strong>
+							</small>
+							{% if defi.dateModeration %}
+								<small class="text-muted">Validé le
+									{{ defi.dateModeration|date('d/m/Y') }}</small>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+
+				<div class="card shadow-sm">
+					<div class="card-header bg-white">
+						<h3 class="h5 mb-0">Retours d'expérience ({{ commentaires|length }})</h3>
+					</div>
+					<div class="card-body">
+						{% if commentaires is empty %}
+							<p class="text-muted text-center fst-italic py-4">
+								Aucun retour pour le moment. Soyez le premier à partager votre expérience !
+							</p>
+						{% else %}
+							{% for comment in commentaires %}
+								<div class="mb-3 border-bottom pb-3">
+									<div class="d-flex justify-content-between align-items-center mb-2">
+										<div>
+											<strong>{{ comment.user.name ?? 'Utilisateur' }}</strong>
+											{% if comment.typeCommentaire == 'experience' %}
+												<span class="badge bg-success ms-2">
+													<i class="fa-solid fa-check"></i>
+													Expérience</span>
+											{% elseif comment.typeCommentaire == 'aide' %}
+												<span class="badge bg-warning text-dark ms-2">
+													<i class="fa-solid fa-question"></i>
+													Aide</span>
+											{% else %}
+												<span class="badge bg-secondary ms-2">{{ comment.typeCommentaire }}</span>
+											{% endif %}
+										</div>
+										<small class="text-muted">{{ comment.date|date('d/m/Y à H:i') }}</small>
+									</div>
+									<p class="mb-1 text-dark">{{ comment.text }}</p>
+								</div>
+							{% endfor %}
+						{% endif %}
+
+						<div class="mt-4">
+							{% if app.user %}
+								<div class="text-center">
+									<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm">
+										<i class="fa-solid fa-pen"></i>
+										Partager mon expérience
+									</button>
+								</div>
+								<div class="collapse mt-3" id="collapseForm">
+									<div class="card card-body bg-light border-0">
+										{{ form_start(form) }}
+										<div class="mb-3">{{ form_row(form.typeCommentaire) }}</div>
+										<div class="mb-3">{{ form_row(form.text) }}</div>
+										<div class="d-grid">
+											<button type="submit" class="btn btn-success">
+												<i class="fa-solid fa-paper-plane"></i>
+												Publier</button>
+										</div>
+										{{ form_end(form) }}
+									</div>
+								</div>
+							{% else %}
+								<div class="text-center">
+									<a href="{{ path('app_login') }}" class="btn btn-outline-primary">Connectez-vous pour commenter</a>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="card shadow-sm sticky-top" style="top: 20px; z-index: 1;">
+					<div class="card-body">
+						<h5 class="card-title">Actions</h5>
+						<p class="card-text text-muted small">
+							Vous avez relevé ce défi ? Racontez à la communauté comment cela s'est passé !
+						</p>
+						<div class="d-grid gap-2">
+							{% if app.user %}
+								<a href="{{ path('app_defi_relever', {'id': defi.id}) }}" class="btn btn-success">
+									<i class="fa-solid fa-check"></i>
+									Je l'ai fait !
+								</a>
+
+								<a href="{{ path('app_defi_signaler', {'id': defi.id}) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Voulez-vous vraiment signaler ce contenu ?');">
+									<i class="fa-solid fa-triangle-exclamation"></i>
+									Signaler ce défi
+								</a>
+							{% else %}
+								<a href="{{ path('app_login') }}" class="btn btn-secondary">
+									Se connecter pour participer
+								</a>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

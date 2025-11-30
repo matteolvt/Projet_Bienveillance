@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Commentaire
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-4">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<h1>
+				<i class="fa-regular fa-comments"></i>
+				Détail du Commentaire #{{ commentaire.id }}</h1>
+			<a href="{{ path('app_admin_commentaire_index') }}" class="btn btn-outline-secondary">
+				<i class="fa-solid fa-arrow-left"></i>
+				Retour à la liste
+			</a>
+		</div>
+
+		<div class="card shadow-sm">
+			<div class="card-header bg-light">
+				<strong>Informations détaillées</strong>
+			</div>
+			<div class="card-body">
+				<table class="table table-bordered">
+					<tbody>
+						<tr>
+							<th style="width: 200px;">ID</th>
+							<td>{{ commentaire.id }}</td>
+						</tr>
+
+						<tr>
+							<th>Auteur (User)</th>
+							<td>
+								{% if commentaire.user %}
+									<strong>{{ commentaire.user.name }}
+										{{ commentaire.user.surname }}</strong>
+									<span class="text-muted">({{ commentaire.user.email }})</span>
+								{% else %}
+									<span class="badge bg-secondary">Utilisateur supprimé</span>
+								{% endif %}
+							</td>
+						</tr>
+
+						<tr>
+							<th>Défi concerné</th>
+							<td>
+								{% if commentaire.defi %}
+									<a href="{{ path('app_admin_defi_show', {'id': commentaire.defi.id}) }}" class="fw-bold text-decoration-none">
+										<i class="fa-solid fa-trophy"></i>
+										{{ commentaire.defi.title }}
+									</a>
+									<div class="small text-muted">
+										(ID:
+										{{ commentaire.defi.id }}
+										- Statut:
+										{{ commentaire.defi.statut }})
+									</div>
+								{% else %}
+									<span class="badge bg-warning text-dark">
+										<i class="fa-solid fa-link-slash"></i>
+										Aucun défi lié
+									</span>
+									<small class="text-muted ms-2">(Le défi a peut-être été supprimé)</small>
+								{% endif %}
+							</td>
+						</tr>
+
+						<tr>
+							<th>Titre du message</th>
+							<td>{{ commentaire.title }}</td>
+						</tr>
+						<tr>
+							<th>Contenu</th>
+							<td class="bg-light p-3">
+								{{ commentaire.text|nl2br }}
+							</td>
+						</tr>
+						<tr>
+							<th>Date de publication</th>
+							<td>{{ commentaire.date ? commentaire.date|date('d/m/Y à H:i:s') : '' }}</td>
+						</tr>
+						<tr>
+							<th>Type</th>
+							<td>
+								{% if commentaire.typeCommentaire == 'experience' %}
+									<span class="badge bg-success">Expérience</span>
+								{% else %}
+									<span class="badge bg-info text-dark">Aide / Conseil</span>
+								{% endif %}
+							</td>
+						</tr>
+						<tr>
+							<th>Statut</th>
+							<td>{{ commentaire.statut }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="card-footer bg-white d-flex justify-content-end gap-2">
+
+				<a href="{{ path('app_admin_commentaire_edit', {'id': commentaire.id}) }}" class="btn btn-warning">
+					<i class="fa-solid fa-pen"></i>
+					Modifier
+				</a>
+
+				{# Le bouton supprimer sécurisé #}
+				<form method="post" action="{{ path('app_admin_commentaire_delete', {'id': commentaire.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+					<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ commentaire.id) }}">
+					<button class="btn btn-danger">
+						<i class="fa-solid fa-trash"></i>
+						Supprimer
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}

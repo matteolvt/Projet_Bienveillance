@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Proposer un défi
+{% endblock %}
+
+{% block body %}
+	<div class="container mt-5">
+		<div class="row justify-content-center">
+			<div class="col-md-8">
+				<div class="card shadow">
+					<div class="card-header bg-primary text-white">
+						<h2 class="h4 mb-0">
+							<i class="fa-solid fa-lightbulb"></i>
+							Proposer un nouveau défi</h2>
+					</div>
+					<div class="card-body p-4">
+						<p class="text-muted">
+							Vous avez une idée pour rendre le monde plus bienveillant ? Proposez-la ici !
+							<br>
+							<small>Note : Votre défi sera soumis à validation avant d'apparaître sur le site.</small>
+						</p>
+
+						{{ form_start(form) }}
+						<div class="mb-3">
+							{{ form_row(form.title) }}
+						</div>
+						<div class="mb-3">
+							{{ form_row(form.description) }}
+						</div>
+
+						<div class="d-flex justify-content-between mt-4">
+							<a href="{{ path('app_home') }}" class="btn btn-outline-secondary">Annuler</a>
+							<button type="submit" class="btn btn-success">
+								<i class="fa-solid fa-paper-plane"></i>
+								Envoyer la proposition
+							</button>
+						</div>
+						{{ form_end(form) }}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

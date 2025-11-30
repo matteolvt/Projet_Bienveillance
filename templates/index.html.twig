@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - Bienveillance
+{% endblock %}
+
+{% block body %}
+	<div class="text-center mb-5">
+		<h1 class="display-4 fw-bold text-primary">Un geste par jour</h1>
+		<p class="lead text-muted">Découvrez un défi aléatoire et rendez le monde un peu plus doux.</p>
+	</div>
+
+	<div class="row justify-content-center">
+		<div class="col-md-8">
+			<div class="card shadow-lg border-0">
+				<div class="card-header bg-white border-0 pt-4 text-center">
+					<span class="badge bg-warning text-dark text-uppercase px-3 py-2 rounded-pill">
+						<i class="fa-solid fa-star"></i>
+						Défi du moment
+					</span>
+				</div>
+				<div class="card-body text-center p-5">
+
+					{% if defi %}
+
+						<h2 class="card-title mb-4">"{{ defi.title }}"</h2>
+
+						<p class="card-text text-muted fst-italic">
+							{{ defi.description|nl2br }}
+						</p>
+
+						<hr class="my-4">
+
+						<div class="d-flex justify-content-center gap-2">
+
+
+							{% if app.user %}
+
+								<a href="{{ path('app_home', {'previous': defi.id}) }}" class="btn btn-outline-primary rounded-pill">
+									<i class="fa-solid fa-rotate"></i>
+									Autre défi aléatoire
+								</a>
+							{% endif %}
+
+
+							{% if app.user %}
+								<a href="{{ path('app_defi_show', {'id': defi.id}) }}" class="btn btn-info text-white rounded-pill">
+									<i class="fa-solid fa-eye"></i>
+									Voir détails & avis
+								</a>
+
+								<a href="{{ path('app_defi_relever', {'id': defi.id}) }}" class="btn btn-success rounded-pill">
+									<i class="fa-solid fa-check"></i>
+									Je relève le défi !
+								</a>
+							{% else %}
+
+								<a href="{{ path('app_login') }}" class="btn btn-secondary rounded-pill">
+									Connectez-vous pour voir plus
+								</a>
+							{% endif %}
+						</div>
+
+					{% else %}
+						<h2 class="card-title text-danger">Aucun défi disponible</h2>
+						<p>Il n'y a pas encore de défis validés dans la base de données.</p>
+					{% endif %}
+
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
